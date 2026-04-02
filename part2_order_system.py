@@ -1,5 +1,3 @@
-import copy
-from collections import Counter
 
 # ─────────────────────────────────────────────
 #  PROVIDED DATA 
@@ -97,6 +95,18 @@ print(f"Most expensive item   : {most_expensive_name} (₹{most_expensive_price:
 print(f"Items priced under ₹150:")
 for name, d in cheap_items.items():
     print(f"  {name:<16} ₹{d['price']:.2f}")
+
+
+# I need to group items by category, so first I collect unique categories
+# by looping through the menu values. I use a list instead of a set
+# so the order stays the same as in the original menu.
+
+# For each category, I loop through the whole menu again and only print
+# items that belong to that category — basically filtering on the fly.
+
+# available items — I use sum() with a condition inside.
+# For each item, if available is True it counts as 1, else 0.
+# max() with a lambda lets me find the item with the highest price.
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -210,6 +220,15 @@ print(f"  {'GST (5%):':<25} ₹{gst:.2f}")
 print(f"  {'Total Payable:':<25} ₹{total:.2f}")
 print("=" * 38)
 
+# Before adding, I check two things: does the item exist in menu?
+# And is it marked available? If either fails, I skip and warn the user.
+
+# The tricky part: if the item is already in the cart, I shouldn't
+# add a new entry — I just increase the quantity of the existing one.
+# So I loop through the cart first to check.
+
+# For removal, I loop through cart and match by item name.
+# list.remove() deletes the first matching element.
 
 # ═══════════════════════════════════════════════════════════════
 #  TASK 3 — Inventory Tracker with Deep Copy
@@ -273,6 +292,14 @@ for item_name in inventory:
     bkup  = inventory_backup[item_name]["stock"]
     diff  = " ← changed" if curr != bkup else ""
     print(f"  {item_name:<18} {curr:>15} {bkup:>13}{diff}")
+
+# If I just write inventory_backup = inventory, both variables point
+# to the SAME dictionary in memory. Changing one changes the other.
+# deepcopy() creates a completely independent copy — changes to
+# inventory won't touch inventory_backup at all.
+
+# I temporarily set a stock value to 999 just to PROVE the backup
+# didn't change. Then I restore it before doing real deductions.
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -338,3 +365,14 @@ for date, orders in sales_log.items():
 print("\n" + "═" * 50)
 print("  All tasks completed successfully!")
 print("═" * 50)
+
+
+# To get daily revenue, I loop through each date and sum up
+# the "total" field from every order on that day.
+
+# For most ordered item, I need to count how many ORDERS each
+# item appears in (not total quantity). So I loop through every
+# order's items list and keep a running count in a dictionary.
+
+# enumerate() gives me both an index and the value at the same time,
+# which is perfect for printing a numbered list without a manual counter.
